@@ -12,11 +12,11 @@ If you intend to publish a paper that utilizes any portion of this code, please 
 pip3 install -e .
 ```
 
-# MonteCarlo 
+# Compile cython C_MonteCarlo module
 
-#!/bin/bash
-#python3 setup.py build_ext --inplace -v
+```
 python3 src/SBM/MonteCarlo/setup_MCMC.py build_ext --inplace -v
+```
 
 ## Dataset format
 
