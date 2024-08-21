@@ -11,22 +11,29 @@ Install python and python library from requirements.txt:
 pip3 install -r requirements.txt --no-cache-dir
 ```
 
+compile C_MonteCarlo module:
+```
+python3 src/SBM/MonteCarlo/setup_MCMC.py build_ext --inplace -v
+```
+
 # To install the editable version of SBM use :
 ```
 pip3 install -e .
 ```
 
-# Compile cython C_MonteCarlo module
-
-```
-python3 src/SBM/MonteCarlo/setup_MCMC.py build_ext --inplace -v
-```
-
 ## Dataset format
-
 
 ## Training
 
 ## Example inside data folder
+
+```
+data/
+├── fasta
+├── MSA_array
+	└── MSA_CM.npy
+├── Ind_train
+	└── Ind_train_CM.npy
+```
 
 ## Example config file
