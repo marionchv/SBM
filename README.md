@@ -23,7 +23,11 @@ pip3 install -e .
 
 ## Dataset format
 
+Before using SBM to infer fields and couplings from a MSA you need to load your fasta file and turn this fasta file into a numpy array of size (Number of sequences x Protein length)
+
 ## Training
+
+See demo_SBM
 
 ## Example inside data folder
 
@@ -36,4 +40,3 @@ data/
 	└── Ind_train_CM.npy
 ```
 
-## Example config file
