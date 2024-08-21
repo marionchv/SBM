@@ -3,11 +3,12 @@
 """
 Created on Fri Oct 23 00:25:00 2020
 
-@author: yaakov
+@author: yaakov KLEEORIN
 Modified by: Marion CHAUVEAU
 """
 
 ####################### MODULES #######################
+
 import numpy as np
 import itertools as it
 from scipy.spatial.distance import pdist,squareform
