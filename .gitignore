@@ -1,0 +1,16 @@
+build/*
+data/*
+env_SBM/*
+results/*
+scripts/*
+
+src/SBM.egg-info/
+
+src/SBM/MonteCarlo/C_MonteCarlo.c
+src/C_MonteCarlo.cpython-37m-x86_64-linux-gnu.so
+
+**/__pycache__/*
+*.pyc
+.vscode/*
+
+.DS_Store
