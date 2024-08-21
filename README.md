@@ -25,6 +25,12 @@ pip3 install -e .
 
 Before using SBM to infer fields and couplings from a MSA you need to load your fasta file and turn this fasta file into a numpy array of size (Number of sequences x Protein length)
 
+```
+import SBM.utils.utils
+MSA = load_fasta('fasta_file')
+np.save('data/MSA_array/MSA_fam.npy',MSA)
+```
+
 ## Training
 
 See demo_SBM
