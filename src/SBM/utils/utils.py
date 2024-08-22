@@ -22,6 +22,8 @@ import time
 from scipy.stats import wasserstein_distance
 from scipy import stats
 import pcmap as cmap
+from sklearn import metrics
+import scipy.io as sio
 
 ##########################################################
 ####################### LOAD FILES #######################
@@ -1083,10 +1085,6 @@ def other_metrics(Models):
 	
 	return Models
 
-
-from sklearn import metrics
-import scipy.io as sio
-
 wt = np.array([ 0, 17, 16,  4, 12, 13, 10, 10,  1, 10, 15,  4,  9,  8, 16,  1, 10,
         3,  4,  9, 10, 10,  1, 10, 10,  1,  4, 15, 15,  4, 10,  1, 18,  4,
        18,  6,  9,  1,  9, 10, 10, 16,  7, 15, 13, 18, 15,  3,  8,  3, 15,
@@ -1294,9 +1292,6 @@ def create_Struct_mat(struct_file='data/1ecm.pdb',dist=8):
 # 	else: 
 # 		test_list.append(new_res)
 # 		list_res[str(new_res)] = c
-	
-
-import itertools
 
 def all_metrics_V2(Models):
 	Mod_list = list(Models.keys())
@@ -1343,7 +1338,7 @@ def all_metrics_V2(Models):
 
 			#### Nat/randcol overlap score ####
 			Enat = np.concatenate((Etest,Etrain))
-			Pairs = list(itertools.product(Enat,Erand2))
+			Pairs = list(it.itertools.product(Enat,Erand2))
 			A = np.array([d[0] for d in Pairs])
 			B = np.array([d[1] for d in Pairs])
 			if ind == N_mod: MOD['Avgmod E_score Nat/RandCol'] = np.sum(((A-B)>0).astype('int'))/len(A)
@@ -1351,7 +1346,7 @@ def all_metrics_V2(Models):
 			#################################
 
 			#### Train/Test overlap score ####
-			Pairs = list(itertools.product(Etrain,Etest))
+			Pairs = list(it.itertools.product(Etrain,Etest))
 			A = np.array([d[0] for d in Pairs])
 			B = np.array([d[1] for d in Pairs])
 			if ind==N_mod: MOD['Avgmod E_score Train/Test'] = 0.5 - np.sum(((A-B)>0).astype('int'))/len(A)
@@ -1382,14 +1377,14 @@ def all_metrics_1mod(Model_file):
 
 	#### Nat/randcol overlap score ####
 	Enat = np.concatenate((Etest,Etrain))
-	Pairs = list(itertools.product(Enat,Erand2))
+	Pairs = list(it.itertools.product(Enat,Erand2))
 	A = np.array([d[0] for d in Pairs])
 	B = np.array([d[1] for d in Pairs])
 	Scores['E_score Nat/RandCol'] = np.sum(((A-B)>0).astype('int'))/len(A)
 	#################################
 
 	#### Train/Test overlap score ####
-	Pairs = list(itertools.product(Etrain,Etest))
+	Pairs = list(it.itertools.product(Etrain,Etest))
 	A = np.array([d[0] for d in Pairs])
 	B = np.array([d[1] for d in Pairs])
 	Scores['E_score Train/Test'] = 0.5 - np.sum(((A-B)>0).astype('int'))/len(A)
