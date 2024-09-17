@@ -68,10 +68,10 @@ def load_fasta(file):
 	AA_to_num.update(dict([(errs[i],-1) for i in range(len(errs))]))
 
 	MSA=np.array([])
-	print(len(list(SeqIO.parse(file, "fasta"))))
+	print('Nb of sequences: ',len(list(SeqIO.parse(file, "fasta"))))
 	count = 0
 	for record in SeqIO.parse(file, "fasta"):
-		if count%10000 == 0:
+		if count%10000 == 0 and count!=0:
 			print(count)
 		seq=np.array([[AA_to_num[record.seq[i]] for i in range(len(record.seq))]])
 		if MSA.shape[0]==0:
@@ -81,9 +81,12 @@ def load_fasta(file):
 		count +=1
             
     # Remove all errornous sequences (contain '-1')
+	print(MSA.shape,np.min(MSA))
 	if np.min(MSA)<0:
-		MSA=np.delete(MSA,(np.sum(MSA==-1,axis=1)).nonzero()[0][0],axis=0)
-	
+		SUM = np.sum((MSA==-1),axis=1)
+		MSA = MSA[(SUM==0)]
+		#MSA=np.delete(MSA,(np.sum(MSA==-1,axis=1)).nonzero()[0][0],axis=0)
+	print(MSA.shape)
 	return MSA
 
 ##########################################################
@@ -179,7 +182,7 @@ def CalcWeights(align,theta):
 	N_eff=sum(W)
 	return W,N_eff
 
-def CalcStatsWeighted(q,MSA,p):
+def CalcStatsWeighted(q,MSA,p=None):
 	"""
 	Function to calculate the statistics of a given weighted multiple sequence alignment,
 	including the frequencies and pairwise frequencies.
@@ -198,11 +201,13 @@ def CalcStatsWeighted(q,MSA,p):
 	fij : numpy array
 		A 4D numpy array with the pairwise frequencies.
 	"""
+	if p is None:
+		p= np.zeros(MSA.shape[0])+1/MSA.shape[0]
 	L=MSA.shape[1]  
 	fi=np.zeros([L,q])
 	x=np.array([i for i in range(L)])
 	for m in range(MSA.shape[0]):
-		fi[x[:],MSA[m,x[:]]]+=p[m]
+		fi[x[:],MSA[m,x[:]]]+= p[m]
 
 	fij=np.zeros([L,L,q,q])
 	x=np.array([[i,j] for i,j in it.product(range(L),range(L))])
