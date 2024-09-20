@@ -8,6 +8,9 @@ src/SBM.egg-info/
 
 src/SBM/MonteCarlo/C_MonteCarlo.c
 src/C_MonteCarlo.cpython-37m-x86_64-linux-gnu.so
+src/SBM/MonteCarlo/C_MonteCarlo_TempDist.pyx
+src/SBM/MonteCarlo/setup_MCMC_TempDist.py
+src/SBM/SCA/sca_pruning_withCode.py
 
 **/__pycache__/*
 *.pyc
