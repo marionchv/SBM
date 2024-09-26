@@ -12,6 +12,13 @@ src/SBM/MonteCarlo/C_MonteCarlo_TempDist.pyx
 src/SBM/MonteCarlo/setup_MCMC_TempDist.py
 src/SBM/SCA/sca_pruning_withCode.py
 
+src/MonteCarlo_Potts.cpython-37m-x86_64-linux-gnu.so
+MonteCarlo_Potts.cpython-37m-x86_64-linux-gnu.so
+
+src/SBM/MonteCarlo/MCMC_Cython
+src/SBM/MonteCarlo/MCMC_Dist
+src/SBM/MonteCarlo/MCMC_Ising
+
 **/__pycache__/*
 *.pyc
 .vscode/*

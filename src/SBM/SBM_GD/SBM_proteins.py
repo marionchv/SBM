@@ -12,7 +12,7 @@ Modified by: Marion CHAUVEAU
 import numpy as np
 import itertools as it
 from scipy.spatial.distance import pdist,squareform
-import C_MonteCarlo # type: ignore
+import MonteCarlo_Potts # type: ignore
 from scipy import stats
 from tqdm import tqdm
 import time
@@ -253,7 +253,7 @@ def GradLogLike(w,lambdaJ,lambdah,fi,fij,options,align_subsamp=None):
     
     ########## MODEL STATS #########
     if options['Zero Fields']:h*=0
-    align_mod=CreateAlign(options['N_chains'],Wj(J,h),options['L'],options['q'],options['k_MCMC'])     
+    align_mod=ut.Create_modAlign({'J':J,'h':h},options['N_chains'],delta_t = options['k_MCMC'])
     p=np.zeros(options['N_chains'])+1/options['N_chains']
     fi_mod,fij_mod=ut.CalcStatsWeighted(options['q'],align_mod,p)
     ################################
@@ -422,23 +422,23 @@ def Jw(W,q):
         h[x[:],a]=W[(q**2*L*(L-1)/2+q*x[:]+a).astype(int)]
     return J,h
 
-def CreateAlign(N_chains,w,L,q,delta_t):
-    """
-	Function to create a alignment based on the provided parameters stored in w
+# def CreateAlign(N_chains,w,L,q,delta_t):
+#     """
+# 	Function to create a alignment based on the provided parameters stored in w
 
-	Args:
-    - N_chains (int): Number of MCMC chains
-	- w (numpy.array): A 1D numpy array containing 'h' and 'J' values.
-    - L (int): Length of the sequences
-    - q (int): Number of MCMC chains
-	- delta_t (int): Number of MCMC steps
+# 	Args:
+#     - N_chains (int): Number of MCMC chains
+# 	- w (numpy.array): A 1D numpy array containing 'h' and 'J' values.
+#     - L (int): Length of the sequences
+#     - q (int): Number of MCMC chains
+# 	- delta_t (int): Number of MCMC steps
 
-	Returns:
-	- numpy.array: A 2D numpy array with the created alignment.
-	"""
-    seed = int(time.time())
-    MSA=np.array(C_MonteCarlo.MC(np.array([x for x in w]),N_chains,L,int(q),delta_t,seed)).reshape(-1,L)
-    return np.array(MSA,dtype = 'int64')
+# 	Returns:
+# 	- numpy.array: A 2D numpy array with the created alignment.
+# 	"""
+#     seed = int(time.time())
+#     MSA=np.array(C_MonteCarlo.MC(np.array([x for x in w]),N_chains,L,int(q),delta_t,seed)).reshape(-1,L)
+#     return np.array(MSA,dtype = 'int64')
 
 def errors(fi_mod, fi_msa, fij_mod, fij_msa):
     eps_f = np.sum(np.abs(fi_mod - fi_msa))/(fi_mod.shape[0]*fi_mod.shape[1])

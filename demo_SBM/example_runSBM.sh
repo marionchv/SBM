@@ -1,1 +1,1 @@
-src/SBM/SBM_GD/SBM_proteins.py CM  --N_iter 10 data/MSA_array/MSA_CM.npy
+python3 demo_SBM/demo_runSBM.py CM data/MSA_array/MSA_CM.npy --N_iter 10 

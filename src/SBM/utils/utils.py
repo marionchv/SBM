@@ -7,7 +7,8 @@
 
 ####################### MODULES #######################
 import itertools as it
-import C_MonteCarlo
+#import C_MonteCarlo # type: ignore
+#import MonteCarlo_Potts # type: ignore
 import matplotlib.pyplot as plt
 import numpy as np
 from Bio import SeqIO
@@ -93,6 +94,7 @@ def load_fasta(file):
 
 ####################### CREATE ARTICIAL ALIGNEMENT #######################
 
+import MonteCarlo_Potts # type: ignore
 def Create_modAlign(output,N,delta_t = 10000,ITER='',temperature=1):
 	"""
 	Function to create a alignment based on the provided parameters
@@ -111,10 +113,11 @@ def Create_modAlign(output,N,delta_t = 10000,ITER='',temperature=1):
 	"""
 	h,J = output['h'+str(ITER)]/temperature,output['J'+str(ITER)]/temperature
 	L,q = h.shape
-	w = Wj(J,h)
-	seed = int(time.time())
-	MSA=np.array(C_MonteCarlo.MC(np.array([x for x in w]),N,L,q,delta_t,seed)).reshape(-1,L).astype(int)
-	return MSA
+	w = np.array(Wj(J,h))
+	states = np.random.randint(q,size=(N,L)).astype('int32')
+	MonteCarlo_Potts.MC(w,states,int(delta_t),int(q))
+	MSA = np.copy(states)
+	return np.array(MSA,dtype = 'int64')
 
 def Wj(J,h):
     """
@@ -156,6 +159,23 @@ def states_rand(samples):
 	Cop = np.copy(samples)
 	np.apply_along_axis(np.random.shuffle, 0, Cop)
 	return Cop
+
+# def Create_modAlign(output,N,delta_t = 10000,ITER='',temperature=1):
+# 	h,J = output['h'+str(ITER)]/temperature,output['J'+str(ITER)]/temperature
+# 	L,q = h.shape
+# 	w = Wj(J,h)
+# 	w = np.array(w)
+# 	states = np.zeros((N,L)).astype('int32')
+# 	MonteCarlo_Potts.MC(w,states,int(delta_t),int(q))
+# 	return states
+
+# import MonteCarlo_Ising # type: ignore
+# def Create_modAlign_Ising(output,N,delta_t = 10000,ITER='',temperature=1):
+# 	h,J = output['h'+str(ITER)]/temperature,output['J'+str(ITER)]/temperature
+# 	L = h.shape[0]
+# 	states = np.zeros((N,L)).astype('int32')
+# 	MonteCarlo_Ising.MC(h,J,states,int(delta_t))
+# 	return states
 
 ##########################################################
 
