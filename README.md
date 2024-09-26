@@ -13,7 +13,7 @@ pip3 install -r requirements.txt --no-cache-dir
 
 compile C_MonteCarlo module:
 ```
-python3 src/SBM/MonteCarlo/setup_MCMC.py build_ext --inplace -v
+sh src/SBM/MonteCarlo/MCMC_Potts/make_mcmc_Potts.sh
 ```
 
 # To install the editable version of SBM use :
