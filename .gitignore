@@ -19,6 +19,8 @@ src/SBM/MonteCarlo/MCMC_Cython
 src/SBM/MonteCarlo/MCMC_Dist
 src/SBM/MonteCarlo/MCMC_Ising
 
+src/SBM/utils/utils_GridSearch.py
+
 **/__pycache__/*
 *.pyc
 .vscode/*

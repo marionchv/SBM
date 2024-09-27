@@ -803,57 +803,29 @@ def Mutational_effect(WT_seq,h,J):
 
 ####################### PCA #######################
 
-#PCA comparison
-def projection(seq,v1_norm,v2_norm):
-    #projections of a sequence on the plane defined by the two vectors v1 and v2
-    return np.dot(seq,v1_norm)*v1_norm + np.dot(seq,v2_norm)*v2_norm 
-
 def PCA_comparison(COG_samp,COG_model,Pears=0,Mask = 1):
-	Ng1,Nc1 = np.shape(COG_samp)
-	Ng2,Nc2 = np.shape(COG_model)
-	if Nc1!=Nc2:
-		print('size problem')
-		assert 0==1
-	# covariance matrix
+	assert COG_samp.shape[1] == COG_model.shape[1]
+
 	if Pears!=0:
 		Cov_Ising = np.corrcoef(COG_samp.T)*Mask
 	else:
 		Cov_Ising = np.cov(COG_samp.T)*Mask
 
-	#diagnonalization
 	W_cov,V_cov = np.linalg.eigh(Cov_Ising)
 
-	#Sum of the eigenvalues to calculate the efficiency of the PCA
-	Sum_w = np.sum(W_cov)
+	ind_sort = np.argsort(W_cov)[::-1]
+	W_cov = W_cov[ind_sort]
+	V_cov = V_cov[:,ind_sort]
+	w1,w2 = W_cov[0],W_cov[1]
+	v1,v2 = V_cov[:,0],V_cov[:,1]
 
-	#index of the top two eigenvalues
-	w1 = np.amax(W_cov)
-	ind_w1 = np.argmax(W_cov)
-	W_cov[ind_w1]=W_cov[ind_w1]-w1
-	w2 = np.amax(W_cov)
-	ind_w2 = np.argmax(W_cov)
+	v1_norm,v2_norm = v1/np.linalg.norm(v1),v2/np.linalg.norm(v2)
 
-	#top two eigenvectors
-	v1 = V_cov[:,ind_w1]
-	v2 = V_cov[:,ind_w2]
-
-	#normalize the two vectors v1 and v2
-	v1_norm = v1/np.linalg.norm(v1)
-	v2_norm = v2/np.linalg.norm(v2)
-
-	ProjX_samp,ProjY_samp = np.zeros(Ng1),np.zeros(Ng1)
-	ProjX_model,ProjY_model = np.zeros(Ng2),np.zeros(Ng2)
-
-	for i in range(Ng1):
-		proj_samp = projection(COG_samp[i],v1_norm,v2_norm)
-		ProjX_samp[i],ProjY_samp[i] = np.dot(proj_samp,v1_norm),np.dot(proj_samp,v2_norm)
-
-	for i in range(Ng2):
-		proj_model = projection(COG_model[i],v1_norm,v2_norm)
-		ProjX_model[i],ProjY_model[i] = np.dot(proj_model,v1_norm),np.dot(proj_model,v2_norm)
+	ProjX_samp,ProjY_samp = COG_samp@ v1_norm,COG_samp@v2_norm
+	ProjX_model,ProjY_model = COG_model@v1_norm,COG_model@v2_norm
 
 	#Efficiency
-	conserved_var = (w1 + w2)/Sum_w
+	conserved_var = (w1 + w2)/np.sum(W_cov)
 	print(conserved_var*100, '%')
 
 	X_samp = np.concatenate((np.expand_dims(ProjX_samp,axis=1),np.expand_dims(ProjY_samp,axis=1)),axis = 1)
