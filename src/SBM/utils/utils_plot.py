@@ -36,24 +36,24 @@ def plot_stats(output,Stats,plot = 'Freq',ma=None):
 		fig.add_subplot(1,2,1)
 		Pears = np.round(np.corrcoef(Stats['Test']['Freq'].flatten(),Stats['Artificial']['Freq'].flatten())[0,1],2)
 		plt.plot([],[],'o',markersize = 3, color = 'white',label='1st order statistics\n Pearson: '+str(Pears))
-		plt.plot(Stats['Test']['Freq'].flatten(),Stats['Artificial']['Freq'].flatten(),'o',markersize = 3)
-		plt.xlabel('Test set')
-		plt.ylabel('Artificial set')
-		plt.plot([0,ma],[0,ma])
+		plt.plot(Stats['Test']['Freq'].flatten(),Stats['Artificial']['Freq'].flatten(),'o',markersize = 3,color='grey')
+		plt.xlabel('Test set', fontsize=14)
+		plt.ylabel('Artificial set', fontsize=14)
+		plt.plot([0,ma],[0,ma],color='black')
 		#plt.xticks(fontsize = 16)
-		plt.legend()
+		plt.legend(fontsize=12)
 		plt.grid()
 		plt.title('Artificial VS Test')
 
 		fig.add_subplot(1,2,2)
 		Pears = np.round(np.corrcoef(Stats['Test']['Freq'].flatten(),Stats['Train']['Freq'].flatten())[0,1],2)
 		plt.plot([],[],'o',markersize = 3, color = 'white',label='1st order statistics\n Pearson: '+str(Pears))
-		plt.plot(Stats['Test']['Freq'].flatten(),Stats['Train']['Freq'].flatten(),'o',markersize = 3)
-		plt.xlabel('Test set')
-		plt.ylabel('Training set')
-		plt.plot([0,ma],[0,ma])
+		plt.plot(Stats['Test']['Freq'].flatten(),Stats['Train']['Freq'].flatten(),'o',markersize = 3,color='grey')
+		plt.xlabel('Test set', fontsize=14)
+		plt.ylabel('Training set', fontsize=14)
+		plt.plot([0,ma],[0,ma],color='black')
 		#plt.xticks(fontsize = 16)
-		plt.legend()
+		plt.legend(fontsize=12)
 		plt.grid()
 		plt.title('Train VS Test')
 
@@ -67,26 +67,26 @@ def plot_stats(output,Stats,plot = 'Freq',ma=None):
 		ind = np.triu_indices(output['align_mod'].shape[1],1)
 		Pears = np.round(np.corrcoef(Stats['Test']['Pair_freq'][ind].flatten(),Stats['Artificial']['Pair_freq'][ind].flatten())[0,1],2)
 		plt.plot([],[],'o',markersize = 3, color = 'white',label='Pairwise Corr\n Pearson: '+str(Pears))
-		plt.plot(Stats['Test']['Pair_freq'][ind].flatten(),Stats['Artificial']['Pair_freq'][ind].flatten(),'o',markersize = 3)
-		plt.xlabel('Test set')
-		plt.ylabel('Artificial set')
+		plt.plot(Stats['Test']['Pair_freq'][ind].flatten(),Stats['Artificial']['Pair_freq'][ind].flatten(),'o',markersize = 3,color='grey')
+		plt.xlabel('Test set', fontsize=14)
+		plt.ylabel('Artificial set', fontsize=14)
 		#plt.plot([0,ma],[0,ma])
-		plt.plot([-ma,ma],[-ma,ma])
+		plt.plot([-ma,ma],[-ma,ma],color='black')
 		#plt.xticks(fontsize = 16)
-		plt.legend()
+		plt.legend(fontsize=12)
 		plt.grid()
 		plt.title('Artificial VS Test')
 
 		ax2 = fig.add_subplot(1,2,2)
 		Pears = np.round(np.corrcoef(Stats['Test']['Pair_freq'][ind].flatten(),Stats['Train']['Pair_freq'][ind].flatten())[0,1],2)
 		plt.plot([],[],'o',markersize = 3, color = 'white',label='Pairwise Corr\n Pearson: '+str(Pears))
-		plt.plot(Stats['Test']['Pair_freq'][ind].flatten(),Stats['Train']['Pair_freq'][ind].flatten(),'o',markersize = 3)
-		plt.xlabel('Test set')
-		plt.ylabel('Training set')
+		plt.plot(Stats['Test']['Pair_freq'][ind].flatten(),Stats['Train']['Pair_freq'][ind].flatten(),'o',markersize = 3,color='grey')
+		plt.xlabel('Test set', fontsize=14)
+		plt.ylabel('Training set', fontsize=14)
 		#plt.plot([0,ma],[0,ma])
-		plt.plot([-ma,ma],[-ma,ma])
+		plt.plot([-ma,ma],[-ma,ma],color='black')
 		#plt.xticks(fontsize = 16)
-		plt.legend()
+		plt.legend(fontsize=12)
 		plt.grid()
 		plt.title('Train VS Test')
 
@@ -98,27 +98,27 @@ def plot_stats(output,Stats,plot = 'Freq',ma=None):
 		fig.add_subplot(1,2,1)
 		Pears = np.round(np.corrcoef(Stats['Test']['Three_corr'].flatten(),Stats['Artificial']['Three_corr'].flatten())[0,1],2)
 		plt.plot([],[],'o',markersize = 3, color = 'white',label='3rd order correlations\n Pearson: '+str(Pears))
-		plt.plot(Stats['Test']['Three_corr'].flatten(),Stats['Artificial']['Three_corr'].flatten(),'o',markersize = 3)
-		plt.xlabel('Test set')
-		plt.ylabel('Artificial set')
+		plt.plot(Stats['Test']['Three_corr'].flatten(),Stats['Artificial']['Three_corr'].flatten(),'o',markersize = 3,color='grey')
+		plt.xlabel('Test set', fontsize=14)
+		plt.ylabel('Artificial set', fontsize=14)
 		plt.plot([np.amin(Stats['Test']['Three_corr']),np.amax(Stats['Test']['Three_corr'])],
-						[np.amin(Stats['Test']['Three_corr']),np.amax(Stats['Test']['Three_corr'])])
+						[np.amin(Stats['Test']['Three_corr']),np.amax(Stats['Test']['Three_corr'])],color='black')
 		#plt.xticks(fontsize = 14)
 		#plt.plot([-ma,ma],[-ma,ma])
-		plt.legend(loc = 'upper left')
+		plt.legend(loc = 'upper left', fontsize=12)
 		plt.grid()
 		plt.title('Artificial VS Test')
 
 		fig.add_subplot(1,2,2)
 		Pears = np.round(np.corrcoef(Stats['Test']['Three_corr'].flatten(),Stats['Train']['Three_corr'].flatten())[0,1],2)
 		plt.plot([],[],'o',markersize = 3, color = 'white',label='3rd order correlations\n Pearson: '+str(Pears))
-		plt.plot(Stats['Test']['Three_corr'].flatten(),Stats['Train']['Three_corr'].flatten(),'o',markersize = 3)
-		plt.xlabel('Test set')
-		plt.ylabel('Training set')
+		plt.plot(Stats['Test']['Three_corr'].flatten(),Stats['Train']['Three_corr'].flatten(),'o',markersize = 3,color='grey')
+		plt.xlabel('Test set', fontsize=14)
+		plt.ylabel('Training set', fontsize=14)
 		plt.plot([np.amin(Stats['Test']['Three_corr']),np.amax(Stats['Test']['Three_corr'])],
-						[np.amin(Stats['Test']['Three_corr']),np.amax(Stats['Test']['Three_corr'])])
+						[np.amin(Stats['Test']['Three_corr']),np.amax(Stats['Test']['Three_corr'])],color='black')
 		#plt.xticks(fontsize = 14)
-		plt.legend(loc = 'upper left')
+		plt.legend(loc = 'upper left', fontsize=12)
 		plt.grid()
 		plt.title('Train VS Test')
 		
@@ -131,6 +131,7 @@ def plot_stats(output,Stats,plot = 'Freq',ma=None):
 		M = min(align_nat.shape[0],output['align_mod'].shape[0])
 		sub_align_PCA =align_nat[np.random.choice(align_nat.shape[0],M,replace=False)]
 		sub_align_mod = output['align_mod'][np.random.choice(output['align_mod'].shape[0],M,replace=False)]
+
 		bin_align = ut.alg2bin(sub_align_PCA, N_aa=20)
 		bin_align_mod = ut.alg2bin(sub_align_mod,N_aa=20)
 
@@ -342,7 +343,7 @@ def density_scatter( x , y,Max,markersize=10)   :
 	# Sort the points by density, so that the densest points are plotted last
 	idx = z.argsort()
 	x, y, z = x[idx], y[idx], z[idx]
-	print(np.min(z),np.max(z))
+	#print(np.min(z),np.max(z))
 	z = np.concatenate((np.array([0]),z,np.array([Max])))
 	x = np.concatenate((np.array([-10]),x,np.array([-10])))
 	y = np.concatenate((np.array([-10]),y,np.array([-10])))
@@ -367,7 +368,7 @@ def BARplot_distances(file_name,Mod_list,fam,delta_t = 1e4,ITER='',Temp=1):
 
 	for i in range(len(file_name)):
 		f = file_name[i]
-		output = np.load('results/'+Mod_list[i]+'/'+fam+'/'+f,allow_pickle=True)[()]
+		output = np.load(f,allow_pickle=True)[()]
 		if output['Test'] is None:
 			if fam[:2]=='TM':
 				output['Test'] = np.load('data/MSA_array/MSA_test_ToyModel.npy')
@@ -818,20 +819,26 @@ def plot_AUC_DMS_meanPred(Ns,N_iter,Rep_list,m_list=None,lambd_list=None,k_list 
 ####################### PLOT COUPLINGS #######################
 
 
-def SBM_compute_J_features(ITER,folder,ns_list,Ni_list,m_list,Rep_list,k_list=None,batch_list=None,TM_nb = 1):
+def SBM_compute_J_features(ITER,folder,ns_list,Ni_list,m_list,Rep_list,k_list=None,batch_list=None,TM_nb = 1,True_mod=None):
+	prefix = 'TM'
 	#ITER = 100 #''#500
-	val = 2
-	L, q = 20, 10
-	J_ab = np.zeros((L,L))
-	J_ab[[4,6,8],[1,3,5]] = val
-	J_ab = J_ab + J_ab.T
-	J_ab[10:14,10:14],J_ab[14:,14:] = val, val
-	np.fill_diagonal(J_ab,0)
-	J_inp = np.zeros((L,L,q,q))
-	for i in range(q):
-		J_inp[:,:,i,i] = J_ab
-	h_inp = np.zeros((L,q)) 
 
+	if True_mod==None:
+		val = 2
+		L, q = 20, 10
+		J_ab = np.zeros((L,L))
+		J_ab[[4,6,8],[1,3,5]] = val
+		J_ab = J_ab + J_ab.T
+		J_ab[10:14,10:14],J_ab[14:,14:] = val, val
+		np.fill_diagonal(J_ab,0)
+		J_inp = np.zeros((L,L,q,q))
+		for i in range(q):
+			J_inp[:,:,i,i] = J_ab
+		h_inp = np.zeros((L,q)) 
+	else:
+		True_model = np.load('data/Models/'+True_mod+'.npy',allow_pickle=True)[()]
+		J_inp,h_inp = True_model['J'],True_model['h']
+	
 	J_inp,_ = ut.Zero_Sum_Gauge(J_inp, h_inp)
 	
 	
@@ -850,16 +857,16 @@ def SBM_compute_J_features(ITER,folder,ns_list,Ni_list,m_list,Rep_list,k_list=No
 		for i in range(len(ns_list)):
 			if k_list is None:
 				if batch_list is None:
-					f = 'TM'+str(TM_nb)+'_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+Rep_list[r]+'.npy'
+					f = prefix+str(TM_nb[i])+'_avgMod_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+Rep_list[r]+'.npy'
 				else:
-					f = 'TM'+str(TM_nb)+'_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'Bf'+str(batch_list[i])+Rep_list[r]+'.npy'
+					f = prefix+str(TM_nb[i])+'_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'Bf'+str(batch_list[i])+Rep_list[r]+'.npy'
 			else:
-				f = 'TM'+str(TM_nb)+'_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'k'+str(k_list[i])+Rep_list[r]+'.npy'
+				f = prefix+str(TM_nb)+'_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'k'+str(k_list[i])+Rep_list[r]+'.npy'
 			
-			path = 'results/Article/SBM/'+folder+'/'+f
+			path = 'results/'+folder+'/'+f
 			if os.path.exists(path):
-				output_SBM = np.load('results/Article/SBM/'+folder+'/'+f,allow_pickle=True)[()]
-
+				output_SBM = np.load(path,allow_pickle=True)[()]
+				#print(output_SBM['options']['lambda_J'])
 				J,_ = ut.Zero_Sum_Gauge(output_SBM['J'+str(ITER)], output_SBM['h'+str(ITER)])
 
 				Jinf_norm = np.linalg.norm(J,'fro',axis = (2,3))/J0
@@ -879,6 +886,113 @@ def SBM_compute_J_features(ITER,folder,ns_list,Ni_list,m_list,Rep_list,k_list=No
 	       		  'J_small':J_small,
 			      'J_large':J_large,
 			      'J_back':J_back}
+	return J_features
+
+def SBM_compute_h_features(ITER,folder,ns_list,Ni_list,m_list,Rep_list,k_list=None,batch_list=None,TM_nb = 1,True_mod = None):
+	prefix = 'TM'
+
+	if True_mod is not None:
+		True_model = np.load('data/Models/'+True_mod+'.npy',allow_pickle=True)[()]
+		J_inp,h_inp = True_model['J'],True_model['h']
+		J_inp,h_inp = ut.Zero_Sum_Gauge(J_inp, h_inp)
+	ind_block = {'0':[1,4],'1':[3,6],'2':[5,8],'3':[10,11,12,13],
+				'4':[14,15,16,17,18,19],'5':[2,4,7,9]}
+
+	h_iso = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+	h_small = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+	h_large = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+	h_back  = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+
+	for r in range(len(Rep_list)):
+		for i in range(len(ns_list)):
+			if k_list is None:
+				if batch_list is None:
+					f = prefix+str(TM_nb[i])+'_avgMod_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+Rep_list[r]+'.npy'
+				else:
+					f = prefix+str(TM_nb[i])+'_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'Bf'+str(batch_list[i])+Rep_list[r]+'.npy'
+			else:
+				f = prefix+str(TM_nb)+'_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'k'+str(k_list[i])+Rep_list[r]+'.npy'
+			
+			path = 'results/'+folder+'/'+f
+			if os.path.exists(path):
+				output_SBM = np.load(path,allow_pickle=True)[()]
+				#print(output_SBM['options']['lambda_J'])
+				J_mod,h_mod = ut.Zero_Sum_Gauge(output_SBM['J'+str(ITER)], output_SBM['h'+str(ITER)])
+
+				hinf_norm = np.sqrt(np.sum(h_mod**2,axis=1))
+				if True_mod is not None:
+					hinf_norm = hinf_norm/np.sqrt(np.sum(h_inp**2,axis=1))
+				
+				#print(h_mod.shape)
+				#print(hinf_norm)
+				norm_iso = np.mean(hinf_norm[ind_block['0']+ind_block['1']+ind_block['2']])
+				norm_small = np.mean(hinf_norm[ind_block['3']])
+				norm_large = np.mean(hinf_norm[ind_block['4']])
+				norm_back = np.mean(hinf_norm[ind_block['5']])
+				#norm_int=  np.mean(Jinf_norm[mask_int])
+
+				h_iso[r,i] = norm_iso
+				h_small[r,i] = norm_small
+				h_large[r,i] = norm_large
+				h_back[r,i] = norm_back
+
+	J_features = {'h_iso':h_iso,
+	       		  'h_small':h_small,
+			      'h_large':h_large,
+			      'h_back':h_back}
+	return J_features
+
+def BM_compute_h_features(ITER,folder,ns_list,Ni_list,lb_list,m_list,Rep_list,k_list=None,batch_list=None,TM_nb = 1,True_mod=None):
+	prefix = 'TM'
+
+	
+	True_model = np.load('data/Models/'+True_mod+'.npy',allow_pickle=True)[()]
+	ind_block = {'0':[1,4],'1':[3,6],'2':[5,8],'3':[10,11,12,13],
+			  '4':[14,15,16,17,18,19],'5':[2,4,7,9]}
+	J_inp,h_inp = True_model['J'],True_model['h']
+	J_inp,h_inp = ut.Zero_Sum_Gauge(J_inp, h_inp)
+
+	h_iso = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+	h_small = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+	h_large = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+	h_back  = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+
+	for r in range(len(Rep_list)):
+		for i in range(len(ns_list)):
+			if k_list is None:
+				if batch_list is None:
+					#f = 'BM_TM'+str(TM_nb)+'_Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'lb'+str(lb_list[i])+Rep_list[r]+'.npy'
+					f = prefix+str(TM_nb[i])+'_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'lJh'+str(lb_list[i])+Rep_list[r]+'.npy'
+				else:
+					f = 'BM_TM'+str(TM_nb)+'_Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'lb'+str(lb_list[i])+'Bf'+str(batch_list[i])+Rep_list[r]+'.npy'
+				
+			else:
+				f = 'BM_TM'+str(TM_nb)+'_Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'lb'+str(lb_list[i])+'k'+str(int(k_list[i]))+Rep_list[r]+'.npy'
+			
+			path = 'results/'+folder+'/'+f
+			if os.path.exists(path):
+				output_SBM = np.load(path,allow_pickle=True)[()]
+				#print(output_SBM['options']['lambda_J'])
+				J_mod,h_mod = ut.Zero_Sum_Gauge(output_SBM['J'+str(ITER)], output_SBM['h'+str(ITER)])
+
+				hinf_norm = np.sqrt(np.sum(h_mod**2,axis=1))/np.sqrt(np.sum(h_inp**2,axis=1))
+				
+				#print(h_mod.shape)
+				#print(hinf_norm)
+				norm_iso = np.mean(hinf_norm[ind_block['0']+ind_block['1']+ind_block['2']])
+				norm_small = np.mean(hinf_norm[ind_block['3']])
+				norm_large = np.mean(hinf_norm[ind_block['4']])
+				norm_back = np.mean(hinf_norm[ind_block['5']])
+
+				h_iso[r,i] = norm_iso
+				h_small[r,i] = norm_small
+				h_large[r,i] = norm_large
+				h_back[r,i] = norm_back
+
+	J_features = {'h_iso':h_iso,
+	       		  'h_small':h_small,
+			      'h_large':h_large,
+			      'h_back':h_back}
 	return J_features
 
 
@@ -940,86 +1054,159 @@ def Compute_J_features_STM(ns_list,Ni_list,m_list,Rep_list,k_list=None,batch_lis
 			      'J_back':J_back}
 	return J_features
 
-def BM_compute_J_features(folder,ns_list,Ni_list,lb_list,Rep_list,k_list=None,batch_list=None,TM_nb = 1):
-	ITER = ''
-	val = 2
-	L, q = 20, 10
-	J_ab = np.zeros((L,L))
-	J_ab[[4,6,8],[1,3,5]] = val
-	J_ab = J_ab + J_ab.T
-	J_ab[10:14,10:14],J_ab[14:,14:] = val, val
-	np.fill_diagonal(J_ab,0)
-	J_inp = np.zeros((L,L,q,q))
-	for i in range(q):
-		J_inp[:,:,i,i] = J_ab
-	h_inp = np.zeros((L,q))
+def BM_compute_J_features(ITER,folder,ns_list,Ni_list,lb_list,m_list,Rep_list,k_list=None,batch_list=None,TM_nb = 1,True_mod=None):
+	prefix = 'TM'
+	#ITER = 100 #''#500
 
+	if True_mod==None:
+		val = 2
+		L, q = 20, 10
+		J_ab = np.zeros((L,L))
+		J_ab[[4,6,8],[1,3,5]] = val
+		J_ab = J_ab + J_ab.T
+		J_ab[10:14,10:14],J_ab[14:,14:] = val, val
+		np.fill_diagonal(J_ab,0)
+		J_inp = np.zeros((L,L,q,q))
+		for i in range(q):
+			J_inp[:,:,i,i] = J_ab
+		h_inp = np.zeros((L,q)) 
+	else:
+		True_model = np.load('data/Models/'+True_mod+'.npy',allow_pickle=True)[()]
+		J_inp,h_inp = True_model['J'],True_model['h']
+	
 	J_inp,_ = ut.Zero_Sum_Gauge(J_inp, h_inp)
-
+	
+	
 	J0 = np.linalg.norm(J_inp,'fro',axis = (2,3))
 	J0 = J0 + (J0==0).astype('int')*np.amax(J0)
 	mask = (np.linalg.norm(J_inp,'fro',axis = (2,3))==0)
-	mask_int = (np.linalg.norm(J_inp,'fro',axis = (2,3))!=0)
+	#mask_int = (np.linalg.norm(J_inp,'fro',axis = (2,3))!=0)
 
-	lb_plot = []
-	nstates_plot = []
-	Ni_plot = []
-
-	#J_score = np.zeros((len(Rep_list),len(ns_list)))
-	J_iso = np.zeros((len(Rep_list),len(ns_list)))
-	J_small = np.zeros((len(Rep_list),len(ns_list)))
-	J_large = np.zeros((len(Rep_list),len(ns_list)))
-	J_back  = np.zeros((len(Rep_list),len(ns_list)))
-	#J_int = np.zeros((len(Rep_list),len(ns_list)))
+	J_iso = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+	J_small = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+	J_large = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+	J_back  = np.zeros((len(Rep_list),len(ns_list)))*np.nan
+	#J_int = np.zeros((len(Rep_list),len(ns_list)))*np.nan
 
 	for r in range(len(Rep_list)):
 		for i in range(len(ns_list)):
 			if k_list is None:
 				if batch_list is None:
-					f = 'BM_TM'+str(TM_nb)+'_Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'lb'+str(lb_list[i])+Rep_list[r]+'.npy'
+					#f = 'BM_TM'+str(TM_nb)+'_Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'lb'+str(lb_list[i])+Rep_list[r]+'.npy'
+					f = prefix+str(TM_nb[i])+'_m'+str(m_list[i])+'Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'lJh'+str(lb_list[i])+Rep_list[r]+'.npy'
 				else:
 					f = 'BM_TM'+str(TM_nb)+'_Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'lb'+str(lb_list[i])+'Bf'+str(batch_list[i])+Rep_list[r]+'.npy'
 				
 			else:
 				f = 'BM_TM'+str(TM_nb)+'_Ns'+str(ns_list[i])+'Ni'+str(Ni_list[i])+'lb'+str(lb_list[i])+'k'+str(int(k_list[i]))+Rep_list[r]+'.npy'
 			
-			output_SBM = np.load('results/Article/BM/'+folder+'/'+f,allow_pickle=True)[()]
+			path = 'results/'+folder+'/'+f
+			#print(path)
+			if os.path.exists(path):
+				output_SBM = np.load(path,allow_pickle=True)[()]
+				#print(output_SBM['options']['lambda_J'])
+				J,_ = ut.Zero_Sum_Gauge(output_SBM['J'+str(ITER)], output_SBM['h'+str(ITER)])
 
-			J,_ = ut.Zero_Sum_Gauge(output_SBM['J'], output_SBM['h'])
-			Jinf_norm = np.linalg.norm(J,'fro',axis = (2,3))/J0
-			
-			norm_iso = np.mean(Jinf_norm[[4,6,8],[1,3,5]])
-			norm_small = np.mean(Jinf_norm[10:14,10:14])
-			norm_large = np.mean(Jinf_norm[14:,14:])
-			norm_back = np.mean(Jinf_norm[mask])
-			#norm_int=  np.mean(Jinf_norm[mask_int])
+				Jinf_norm = np.linalg.norm(J,'fro',axis = (2,3))/J0
+				
+				norm_iso = np.mean(Jinf_norm[[4,6,8],[1,3,5]])
+				norm_small = np.mean(Jinf_norm[10:14,10:14])
+				norm_large = np.mean(Jinf_norm[14:,14:])
+				norm_back = np.mean(Jinf_norm[mask])
+				#norm_int=  np.mean(Jinf_norm[mask_int])
 
-			J_iso[r,i] = norm_iso
-			J_small[r,i] = norm_small
-			J_large[r,i] = norm_large
-			J_back[r,i] = norm_back
-			#J_int[r,i] = norm_int
-
-			if r==0:
-				nstates_plot.append(output_SBM['options']['n_states'])
-				lb_plot.append(output_SBM['options']['lambda_J'])
-				Ni_plot.append(output_SBM['options']['maxIter'])
-	lb_plot,nstates_plot,Ni_plot = np.array(lb_plot),np.array(nstates_plot),np.array(Ni_plot)
+				J_iso[r,i] = norm_iso
+				J_small[r,i] = norm_small
+				J_large[r,i] = norm_large
+				J_back[r,i] = norm_back
 
 	J_features = {'J_iso':J_iso,
 	       		  'J_small':J_small,
 			      'J_large':J_large,
 			      'J_back':J_back}
-	return J_features,lb_plot,nstates_plot,Ni_plot
+	return J_features
+
+def plot_h_features(h_features,Xaxis_list,Xlim,xaxis = 'n_states',Reverse_xaxis=False):
+	Z_value = 1.96
+	c4 = (0.8,0.8,0.8)
+	#c1,c2,c3 = (0.929,0.737,0.255), (0.592,0.122,0.086),(0.318,0.051,0.043)
+	c1,c2,c3 = (0.818,0.650,0.223),(0.8,0.170,0.121),(0.318,0.051,0.043) 
+	#c1,c2,c3,c4 = 'black','blue','red','green'
+	axis_font = {'size':'22'}
+	fig = plt.figure(figsize = (9,7))
+	#fig.patch.set_facecolor((0.918,0.918,0.918))
+
+	plt.plot(Xlim,[1,1],'--',color = 'black',linewidth = 1.3)
+
+	mean_iso = np.nanmean(h_features['h_iso'],axis=0)
+	mean_small = np.nanmean(h_features['h_small'],axis=0)
+	mean_large = np.nanmean(h_features['h_large'],axis=0)
+	mean_back = np.nanmean(h_features['h_back'],axis=0)
+
+	eb_iso = Z_value*np.nanstd(h_features['h_iso'],axis=0)/max(np.sqrt(h_features['h_iso'].shape[0]-1),1)
+	eb_small = Z_value*np.nanstd(h_features['h_small'],axis=0)/max(np.sqrt(h_features['h_small'].shape[0]-1),1)
+	eb_large = Z_value*np.nanstd(h_features['h_large'],axis=0)/max(np.sqrt(h_features['h_large'].shape[0]-1),1)
+	eb_back = Z_value*np.nanstd(h_features['h_back'],axis=0)/max(np.sqrt(h_features['h_back'].shape[0]-1),1)
+
+	lw = 4
+	ms = 7.5
+	plt.plot(Xaxis_list,mean_iso,'--o',linewidth = lw,markersize = ms, color = c1,label = 'Pairwise int.')
+	plt.fill_between(Xaxis_list,np.maximum(mean_iso-eb_iso,4e-3*np.ones(mean_iso.shape)),mean_iso+eb_iso,color = c1,alpha=0.2)
+
+	plt.plot(Xaxis_list,mean_small,'--o',linewidth = lw,markersize = ms,color = c2,label = 'Small collective')
+	plt.fill_between(Xaxis_list,mean_small-eb_small,mean_small+eb_small,color = c2,alpha=0.2)
+	
+	plt.plot(Xaxis_list,mean_large,'--o',linewidth = lw,markersize = ms,color = c3,label = 'Large collective')
+	plt.fill_between(Xaxis_list,mean_large-eb_large,mean_large+eb_large,color = c3,alpha=0.2)
+
+	plt.plot(Xaxis_list,mean_back,'--o',linewidth = lw,markersize = ms,color = c4,label = 'Non interacting')
+	plt.fill_between(Xaxis_list,np.maximum(mean_back-eb_back,4e-3*np.ones(mean_back.shape)),mean_back+eb_back,color = 'gray',alpha=0.2)
+
+	plt.ylabel(r'$\frac{\widehat{h}_{i}}{h^{inp}}$',**axis_font,rotation=0,labelpad=30)
+	#plt.ylim([-0.5,2.2])
+	plt.ylim([0,4])
+	#plt.ylim([4e-3,2.5])
+	#plt.yscale('log')
+
+	if xaxis=='n_states':
+		#plt.xlabel(r'$\lambda_J$',**axis_font)
+		plt.xlabel(r'$N_{chains}$',**axis_font)
+	elif xaxis=='N_iter':
+		plt.xlabel(r'$N_{iter}$',**axis_font)
+	elif xaxis=='m':
+		plt.xlabel(r'$m$',**axis_font)
+	elif xaxis=='k':
+		plt.xlabel(r'$k$',**axis_font)
+	elif xaxis=='lambda_J':
+		plt.xlabel(r'$\lambda_J$',**axis_font)
+	elif xaxis=='batch_size':
+		plt.xlabel(r'Batch size',**axis_font)
+	elif xaxis=='M':
+		plt.xlabel(r'$M_{eff}$',**axis_font)
+	
+	plt.xlim(Xlim)
+	plt.xscale('log')
+
+	plt.xticks(fontsize = 18)
+	plt.yticks(fontsize = 18)
+	if Reverse_xaxis:
+		plt.gca().invert_xaxis()
+	plt.legend(fontsize = 19)
+	plt.grid(True,which="both", ls="-", color='0.9')
+	#plt.gca().set_aspect('equal')
+	#fig.savefig('figures/TM/TM_Fields_SBMcurves.svg')
+	plt.show()
+
 
 def plot_J_features(J_features,Xaxis_list,Xlim,xaxis = 'n_states',Reverse_xaxis=False):
 	Z_value = 1.96
 	c4 = (0.8,0.8,0.8)
 	#c1,c2,c3 = (0.929,0.737,0.255), (0.592,0.122,0.086),(0.318,0.051,0.043)
-	c1,c2,c3 = (0.818,0.650,0.223),(0.8,0.170,0.121),(0.318,0.051,0.043)
+	c1,c2,c3 = (0.818,0.650,0.223),(0.8,0.170,0.121),(0.318,0.051,0.043) 
+	#c1,c2,c3,c4 = 'black','blue','red','green'
 	axis_font = {'size':'22'}
-	fig = plt.figure(figsize = (9,7))
-	#fig.patch.set_facecolor((0.921,0.921,0.921))
+	fig = plt.figure(figsize = (7,7))
+	#fig.patch.set_facecolor((0.918,0.918,0.918))
 
 	plt.plot(Xlim,[1,1],'--',color = 'black',linewidth = 1.3)
 
@@ -1033,22 +1220,29 @@ def plot_J_features(J_features,Xaxis_list,Xlim,xaxis = 'n_states',Reverse_xaxis=
 	eb_large = Z_value*np.nanstd(J_features['J_large'],axis=0)/max(np.sqrt(J_features['J_large'].shape[0]-1),1)
 	eb_back = Z_value*np.nanstd(J_features['J_back'],axis=0)/max(np.sqrt(J_features['J_back'].shape[0]-1),1)
 
-	plt.loglog(Xaxis_list,mean_iso,'--o',linewidth = 2.4,color = c1,label = 'Pairwise int.')
+	print(mean_iso)
+
+	lw = 4
+	ms = 7.5
+	plt.plot(Xaxis_list,mean_iso,'--o',linewidth = lw,markersize = ms, color = c1,label = 'Pairwise int.')
 	plt.fill_between(Xaxis_list,np.maximum(mean_iso-eb_iso,4e-3*np.ones(mean_iso.shape)),mean_iso+eb_iso,color = c1,alpha=0.2)
 
-	plt.loglog(Xaxis_list,mean_small,'--o',linewidth = 2.4,color = c2,label = 'Small collective')
+	plt.plot(Xaxis_list,mean_small,'--o',linewidth = lw,markersize = ms,color = c2,label = 'Small collective')
 	plt.fill_between(Xaxis_list,mean_small-eb_small,mean_small+eb_small,color = c2,alpha=0.2)
 	
-	plt.loglog(Xaxis_list,mean_large,'--o',linewidth = 2.4,color = c3,label = 'Large collective')
+	plt.plot(Xaxis_list,mean_large,'--o',linewidth = lw,markersize = ms,color = c3,label = 'Large collective')
 	plt.fill_between(Xaxis_list,mean_large-eb_large,mean_large+eb_large,color = c3,alpha=0.2)
 
-	plt.loglog(Xaxis_list,mean_back,'--o',linewidth = 2.4,color = c4,label = 'Non interacting')
+	plt.plot(Xaxis_list,mean_back,'--o',linewidth = lw,markersize = ms,color = c4,label = 'Non interacting')
 	plt.fill_between(Xaxis_list,np.maximum(mean_back-eb_back,4e-3*np.ones(mean_back.shape)),mean_back+eb_back,color = 'gray',alpha=0.2)
 
 	plt.ylabel(r'$||\hat{J}_{ij}||\ / \ J_0$',**axis_font)
-	plt.ylim([4e-3,3])
+	plt.ylim([1e-2,3])
+	#plt.ylim([3e-2,2.5])
+	plt.yscale('log')
 
 	if xaxis=='n_states':
+		#plt.xlabel(r'$\lambda_J$',**axis_font)
 		plt.xlabel(r'$N_{chains}$',**axis_font)
 	elif xaxis=='N_iter':
 		plt.xlabel(r'$N_{iter}$',**axis_font)
@@ -1060,15 +1254,20 @@ def plot_J_features(J_features,Xaxis_list,Xlim,xaxis = 'n_states',Reverse_xaxis=
 		plt.xlabel(r'$\lambda_J$',**axis_font)
 	elif xaxis=='batch_size':
 		plt.xlabel(r'Batch size',**axis_font)
+	elif xaxis=='M':
+		plt.xlabel(r'$M_{eff}$',**axis_font)
 	
 	plt.xlim(Xlim)
+	plt.xscale('log')
 
 	plt.xticks(fontsize = 18)
 	plt.yticks(fontsize = 18)
 	if Reverse_xaxis:
 		plt.gca().invert_xaxis()
-	plt.legend(loc = 'lower left',fontsize = 17)
+	plt.legend(fontsize = 19)
 	plt.grid(True,which="both", ls="-", color='0.9')
+	#plt.gca().set_aspect('equal')
+	fig.savefig('figures/TM/TM_Couplings_SBMcurves.svg')
 	plt.show()
 
 def plot_J_features_STM(J_features,Xaxis_list,Xlim,xaxis = 'n_states',Reverse_xaxis=False):
@@ -1518,3 +1717,84 @@ def compare_to_dms_regression(h, J, wt, dms_file = "/Users/emily/Downloads/CM_DM
     return r_sq
 
 
+############# Statistical energies histograms for Ubiquinone ############
+
+
+# def plot_Phylum_Energy(output,hmm,hmm_all,Phylum_all,Nb_phyl=None,title=None):
+# 	MSA = output['align']
+
+# 	ind_hmm = (hmm_all==hmm)
+# 	MSA_sub = MSA[ind_hmm]
+# 	phyl_sub = Phylum_all[ind_hmm]
+
+# 	plt.figure(figsize=(10, 6))
+# 	colors = plt.cm.tab20(np.arange(20))
+
+# 	E_sub = ut.compute_energies(MSA_sub,output['h'],output['J'])
+# 	plt.hist(E_sub, bins=100,range=(-1500,-700), color='black',histtype=u'step',linewidth=3,label=hmm)
+
+# 	unique_phyl,counts_phyl = np.unique(phyl_sub,return_counts=True)
+# 	ind_sort = np.argsort(counts_phyl)[::-1]
+# 	counts_phyl,unique_phyl = counts_phyl[ind_sort],unique_phyl[ind_sort]
+# 	print(unique_phyl[:20])
+# 	print(counts_phyl[:20])
+# 	print(len(unique_phyl))
+
+# 	if Nb_phyl is None: Nb_phyl=len(unique_phyl)
+# 	for i in range(Nb_phyl):
+# 		phyl = unique_phyl[i]
+# 		if phyl != '':
+# 			MSA_plot = MSA_sub[(phyl_sub==phyl)]
+# 			E_plot = ut.compute_energies(MSA_plot,output['h'],output['J'])
+# 			plt.hist(E_plot, bins=100,range=(-1500,-700), color=colors[i], alpha=0.4,label=phyl)
+
+# 	plt.ylabel('Occurrences', fontsize=12)
+# 	plt.xlabel('Statistical energies', fontsize=12)
+# 	plt.title(title, fontsize=15)
+# 	plt.legend()
+# 	plt.grid(axis='y', linestyle='--', alpha=0.7)
+# 	plt.show()
+
+
+def plot_Phylum_Energy(output,hmm,hmm_all,Phylum_all,Nb_phyl=None,title=None):
+	MSA = output['align']
+
+	ind_hmm = (hmm_all==hmm)
+	MSA_sub = MSA[ind_hmm]
+	phyl_sub = Phylum_all[ind_hmm]
+
+	plt.figure(figsize=(10, 6))
+	colors = plt.cm.tab10(np.arange(10))
+
+	unique_phyl,counts_phyl = np.unique(phyl_sub,return_counts=True)
+	ind_sort = np.argsort(counts_phyl)[::-1]
+	counts_phyl,unique_phyl = counts_phyl[ind_sort],unique_phyl[ind_sort]
+	# print(unique_phyl[:20])
+	# print(counts_phyl[:20])
+	print('Nb ', title, ': ',len(unique_phyl))
+
+	if Nb_phyl is None: Nb_phyl=len(unique_phyl)
+	E_plots = []
+	labels = []
+	colors_used = []
+
+	for i in range(Nb_phyl):
+		phyl = unique_phyl[i]
+		if phyl != '':
+			MSA_plot = MSA_sub[(phyl_sub==phyl)]
+			E_plot = ut.compute_energies(MSA_plot, output['h'], output['J'])
+			E_plots.append(E_plot)
+			labels.append(phyl)
+			colors_used.append(colors[i])
+
+	plt.hist(E_plots, bins=80,range=(-1500,-700), stacked=True, label=labels, color=colors_used, alpha=0.8)
+		
+	E_sub = ut.compute_energies(MSA_sub,output['h'],output['J'])
+	plt.hist(E_sub, bins=80,range=(-1500,-700), color='black',histtype=u'step',linewidth=3,label=hmm)
+
+	plt.ylabel('Occurrences', fontsize=12)
+	plt.xlabel('Statistical energies', fontsize=12)
+	plt.title(title, fontsize=15)
+	plt.legend()
+	plt.grid(axis='y', linestyle='--', alpha=0.7)
+	plt.show()

@@ -3,6 +3,7 @@ data/*
 env_SBM/*
 results/*
 scripts/*
+figures/*
 
 src/SBM.egg-info/
 
@@ -14,6 +15,9 @@ src/SBM/SCA/sca_pruning_withCode.py
 
 src/MonteCarlo_Potts.cpython-37m-x86_64-linux-gnu.so
 MonteCarlo_Potts.cpython-37m-x86_64-linux-gnu.so
+
+MonteCarlo_Dist.cpython-37m-x86_64-linux-gnu.so
+quarto-1.3.450-linux-amd64.tar.gz
 
 src/SBM/MonteCarlo/MCMC_Cython
 src/SBM/MonteCarlo/MCMC_Dist

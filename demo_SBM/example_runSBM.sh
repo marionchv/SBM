@@ -1,1 +1,1 @@
-python3 demo_SBM/demo_runSBM.py CM data/MSA_array/MSA_CM.npy --N_iter 10 
+python3 demo_SBM/demo_runSBM.py ToyModel data/ToyModel/MSA_TM.npy

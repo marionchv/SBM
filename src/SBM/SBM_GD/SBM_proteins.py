@@ -33,6 +33,8 @@ def ParseOptions(options):
         ('theta',0.2),
         ('k_MCMC',10000),
 
+        ('PseudoCount',False), # the default pseudo count is 1/Neff
+
         ('alpha',0.2),  #Learning rate for the BM method
         ('Learning_rate',None),
 
@@ -40,13 +42,15 @@ def ParseOptions(options):
         ('lambda_J', 0),    # regularization for the couplings
 
         ('Pruning', False),
-        ('Pruning_perc',0.97),
-        ('Pruning Mask', None),
+        ('Pruning_perc',None),
+        ('Pruning Mask Couplings', None),
+        ('Infinite Mask Fields',None) # To forbid certain a.a at certain positions
         
         ('Param_init', 'Profile'), # Zero, Profile, Custom
 
         ('Test/Train', True), #If True and 'Train sequences' is None: the MSA is randomly splitted in a 80% training set / 20% test set
         ('Train sequences',None), #indices of sequences used for training
+        ('Precomputed_Stats',None),
 
         ('Weights',None),
 
@@ -100,8 +104,8 @@ def Init_TestTrain(options,align):
             ind_train = options['Train sequences']
         train_align = align[ind_train]
         test_align = align[np.delete(np.arange(N),ind_train)]
-        sim_test = ut.compute_similarities(test_align,train_align)
-        test_align = test_align[(sim_test>0.2)]
+        #sim_test = ut.compute_similarities(test_align,train_align)
+        #test_align = test_align[(sim_test>0.2)]
     else:
         train_align = align
         test_align = None
@@ -135,13 +139,17 @@ def Init_statistics(options,train_align):
     print('Compute the statistics from the database....')
     if options['Weights'] is None:
         W,N_eff=ut.CalcWeights(train_align,options['theta'])
-        print('Training size: ',train_align.shape[0])
-        print('Effective training size: ',N_eff)
     else:
         assert len(options['Weights'])==train_align.shape[0]
         W = options['Weights']
         N_eff = np.sum(W)
-    fi,fij=ut.CalcStatsWeighted(options['q'],train_align,W/N_eff)
+    print('Training size: ',train_align.shape[0])
+    print('Effective training size: ',N_eff)
+    
+    if options['Precomputed_Stats'] is None:
+        fi,fij=ut.CalcStatsWeighted(options['q'],train_align,W/N_eff)
+    else: 
+        fi,fij = options['Precomputed_Stats']['fi'],options['Precomputed_Stats']['fij']
     ################################
 
     return fi,fij,N_eff
@@ -150,12 +158,12 @@ def Init_Pruning(options,shape_fij,train_align):
 
     ############ PRUNING ###########
     if options['Pruning']:
-        if options['Pruning Mask'] is None:
+        if options['Pruning Mask Couplings'] is None:
 
             if options['Pruning_perc'] ==0:
-                options['Pruning Mask'] = np.ones(shape_fij).astype('bool')
+                options['Pruning Mask Couplings'] = np.ones(shape_fij).astype('bool')
             elif options['Pruning_perc']==1:
-                options['Pruning Mask'] = np.zeros(shape_fij).astype('bool')
+                options['Pruning Mask Couplings'] = np.zeros(shape_fij).astype('bool')
             else:
                 # size = len(fij.flatten())
                 # Mask = np.zeros(size)
@@ -167,7 +175,7 @@ def Init_Pruning(options,shape_fij,train_align):
                 assert shape_fij == Mask.shape
                 print('Pruning pct: ',1-np.sum(Mask)/np.sum(np.ones(Mask.shape)))
 
-                options['Pruning Mask'] = Mask.astype('bool')
+                options['Pruning Mask Couplings'] = Mask.astype('bool')
             
             # p_val = ut.compute_p_values(train_align,options['q'])
             # thresh = np.sort((p_val+p_val.T).flatten())[int((1-options['Pruning_perc'])*p_val.size)]
@@ -195,15 +203,16 @@ def Init_Param(options,J0,h0,N_eff,fi):
         hinit = h0
     elif options['Param_init']=='Random':
         ma = 1
-        Jinit = np.random.uniform(0,ma,(options['L'],options['L'],options['q'],options['q']))
-        hinit = np.random.uniform(0,ma,(options['L'],options['q']))
+        Jinit = np.random.uniform(-ma,ma,(options['L'],options['L'],options['q'],options['q']))
+        hinit = np.random.uniform(-ma,ma,(options['L'],options['q']))
     else:
         print('This "Param_init" option is not available')
         assert 0==1
     ################################
 
     ################################
-    if options['Pruning']:Jinit *= options['Pruning Mask']
+    if options['Pruning']:Jinit *= options['Pruning Mask Couplings']
+    if options['Infinite Mask Fields'] is not None: hinit[~options['Infinite Mask Fields']] = -1e4
     if options['Zero Fields']:hinit*=0
         
     w0=Wj(Jinit,hinit)
@@ -211,6 +220,13 @@ def Init_Param(options,J0,h0,N_eff,fi):
     ################################
 
     return w0
+
+
+def add_PseudoCount(options,fi,fij,N_eff):
+        alpha = 1/N_eff
+        fi_pc = (1-alpha)*fi + alpha/options['q']
+        fij_pc = (1-alpha)*fij + alpha/options['q']**2
+        return fi_pc,fij_pc
 
 ##############################################################################
 
@@ -225,6 +241,11 @@ def SBM(align,options,J0 = None,h0 = None):
     fi,fij,N_eff = Init_statistics(options,train_align)
     Init_Pruning(options,fij.shape,train_align)
     w0 = Init_Param(options,J0,h0,N_eff,fi)
+
+    if options['PseudoCount']:
+        print('Adding pseudo count on statistics')
+        fi,fij = add_PseudoCount(options,fi,fij,N_eff)
+    
     ################################
     
     ###### OBJECTIVE FUNCTION ######
@@ -274,8 +295,10 @@ def GradLogLike(w,lambdaJ,lambdah,fi,fij,options,align_subsamp=None):
     gradJ=fij_mod-fij+2*lambdaJ*J
     ################################
     
-    if options['Zero Fields']:gradh*=0
+    
     if options['Pruning']:gradJ*=options['Pruning Mask']
+    if options['Infinite Mask Fields'] is not None:gradh*=options['Infinite Mask Fields']
+    if options['Zero Fields']:gradh*=0
 
     grad=Wj(gradJ,gradh)
     return grad
@@ -300,7 +323,7 @@ def Minimizer(fun,x0,options):
                 diag=1
                 gtd=np.dot(-g,h)
                 ind=np.zeros(options['m'])-1;ind[0]=0
-                t=1/np.sum(g**2)**0.7
+                t=1/np.sum(g**2)**0.5
             else:t=1
             x,h,g,gtd,s,y,ys,diag,ind,output['skipping']=AdvanceSearch(x,t,h,g,fun,gtd,s,y,ys,diag,ind,output['skipping'],options)
         ################################

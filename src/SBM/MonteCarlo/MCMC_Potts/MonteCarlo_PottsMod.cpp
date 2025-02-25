@@ -31,7 +31,7 @@ PyObject* MC(PyObject*,PyObject* args) {
     int* States = (int*) PyArray_DATA(StatesO);
     const unsigned int seed0 = time(nullptr);
 
-    omp_set_num_threads(5);
+    omp_set_num_threads(50);
     #pragma omp parallel
     {
 		std::uniform_int_distribution<int>unifpos(0,L-1);

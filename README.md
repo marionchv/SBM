@@ -46,3 +46,20 @@ data/
 	└── Ind_train_CM.npy
 ```
 
+
+## Create a virtual env
+
+```
+pip3 install virtualenv
+virtualenv -p python3 env_name
+source env_name/bin/activate
+```
+
+## use jupyter notebook on a cluster
+
+
+```
+pip3 install ipykernel
+````
+create a notebook
+choose python environment env_name

@@ -9,22 +9,20 @@
 import itertools as it
 #import C_MonteCarlo # type: ignore
 #import MonteCarlo_Potts # type: ignore
-import matplotlib.pyplot as plt
 import numpy as np
 from Bio import SeqIO
 from scipy.io import loadmat
 from tqdm import tqdm
-import pandas as pd
-import seaborn as sns
 from scipy.spatial.distance import pdist, squareform
 import math
 import csv as csv
 import time
 from scipy.stats import wasserstein_distance
 from scipy import stats
-import pcmap as cmap
+#import pcmap as cmap
 from sklearn import metrics
 import scipy.io as sio
+from scipy.stats import skew, kurtosis
 
 ##########################################################
 ####################### LOAD FILES #######################
@@ -90,6 +88,21 @@ def load_fasta(file):
 	print(MSA.shape)
 	return MSA
 
+
+def save_fasta_from_array(Model_file, fasta_file,Nb_seq=100):
+	output_mod = np.load(Model_file, allow_pickle=True)[()]
+	sequences = Create_modAlign(output_mod, Nb_seq, output_mod['options0']['k_MCMC'], temperature=1)
+
+	CODE = "-ACDEFGHIKLMNPQRSTVWY"
+	M = sequences.shape[0]
+
+	with open(fasta_file, 'w') as f:
+		for i in range(M):
+			f.write(f">SBM N_chains={output_mod['options0']['N_chains']}|sequence {i+1}\n")
+			sequence = ''.join([CODE[int(j)] for j in sequences[i]])
+			f.write(sequence + '\n')
+
+
 ##########################################################
 
 ####################### CREATE ARTICIAL ALIGNEMENT #######################
@@ -145,6 +158,20 @@ def Wj(J,h):
         W[(q**2*L*(L-1)/2+q*x[:]+a).astype(int)]=h[x[:],a]
     return W
 
+def Jw(W,q):
+	L=int(((q*q-2*q)+((2*q-q*q)**2+8*W.shape[0]*q*q)**(1/2))/2/q/q)
+	J=np.zeros((L,L,q,q))
+	h=np.zeros((L,q))
+	x=np.array([[i,j] for i,j in it.combinations(range(L),2)])
+	for a in range(q):
+		for b in range(q):
+			J[x[:,0],x[:,1],a,b]=W[(q**2*((x[:,0])*(2*L-x[:,0]-1)/2+(x[:,1]-x[:,0]-1))+(a)*q+b).astype(int)]
+			J[x[:,1],x[:,0],b,a]=J[x[:,0],x[:,1],a,b]
+	x=np.array(range(L))
+	for a in range(q):
+		h[x[:],a]=W[(q**2*L*(L-1)/2+q*x[:]+a).astype(int)]
+	return J,h
+
 def states_rand(samples):
 	"""
 	Function to randomize states in the input samples
@@ -179,6 +206,19 @@ def states_rand(samples):
 
 ##########################################################
 
+####################### Post processing model #######################
+
+def avg_over_runs(ws):
+	ws_mean = np.mean(ws, axis=0)	
+	ws_std = np.std(ws, axis=0)
+	# Count outliers for each run
+	outliers = np.sum((ws - ws_mean)> ws_std, axis=1)
+	# Find runs with outlier count more than 1 std above mean
+	exclude = np.where((outliers - np.mean(outliers)) > np.std(outliers))[0]
+	w_av = np.mean(np.delete(ws, exclude, axis=0), axis=0)
+	return w_av
+
+##########################################################
 ####################### COMPUTE STATISTICS #######################
 
 def CalcWeights(align,theta):
@@ -198,7 +238,7 @@ def CalcWeights(align,theta):
 		The effective count derived from the sum of weights.
 	"""
 	#W = 1/(np.sum(squareform(pdist(align, 'hamming'))<theta,axis=0))
-	W = 1/(np.sum(squareform(compute_diversity(align))<theta,axis=0))
+	W = 1/np.max(1,(np.sum(squareform(compute_diversity(align))<theta,axis=0)))
 	N_eff=sum(W)
 	return W,N_eff
 
@@ -285,19 +325,21 @@ def compute_stats(output,align_mod):
 	- dict: A dictionary containing different statistics calculated from the input data.
 	"""
 	Stats = {}
-	test_align = output['Test']
-	options = output['options']
+	#options = output['options']
 	train_align = output['Train']
-	M = min(output['Train'].shape[0],output['Test'].shape[0],align_mod.shape[0])
-	train_align = train_align[np.sort(np.random.choice(output['Train'].shape[0],M,replace=False))]
+	test_align = output['Test']
+	if test_align is None:
+		test_align = np.copy(train_align)
+	M = min(train_align.shape[0],test_align.shape[0],align_mod.shape[0])
+	train_align = train_align[np.sort(np.random.choice(train_align.shape[0],M,replace=False))]
 	align_mod = align_mod[np.sort(np.random.choice(align_mod.shape[0],M,replace=False))]
 	test_align = test_align[np.sort(np.random.choice(test_align.shape[0],M,replace=False))]
 
-	ind_L = np.random.choice(options['L'],10,replace=False)
+	ind_L = np.random.choice(output['options1']['L'],10,replace=False)
 	# Artificial stats
 	art = {}
-	W,N_eff=CalcWeights(align_mod,options['theta'])
-	fi_s,fij_s=CalcStatsWeighted(options['q'],align_mod,W/N_eff)
+	W,N_eff=CalcWeights(align_mod,output['options0']['theta'])
+	fi_s,fij_s=CalcStatsWeighted(output['options1']['q'],align_mod,W/N_eff)
 	C3_s = CalcThreeCorrWeighted(align_mod,fi_s,fij_s,p=W/N_eff,ind_L=ind_L)
 	art['Freq'] = fi_s
 	art['Pair_freq'] = CalcCorr2(fi_s,fij_s) #fij_s#
@@ -305,8 +347,8 @@ def compute_stats(output,align_mod):
 
 	#Train stats
 	train = {}
-	W,N_eff=CalcWeights(train_align,options['theta'])
-	fi,fij=CalcStatsWeighted(options['q'],train_align,W/N_eff)
+	W,N_eff=CalcWeights(train_align,output['options0']['theta'])
+	fi,fij=CalcStatsWeighted(output['options1']['q'],train_align,W/N_eff)
 	C3 = CalcThreeCorrWeighted(train_align,fi,fij,p = W/N_eff,ind_L=ind_L)
 	train['Freq'] = fi
 	train['Pair_freq'] = CalcCorr2(fi,fij)#fij#
@@ -314,8 +356,8 @@ def compute_stats(output,align_mod):
 
 	#Test stats
 	test = {}
-	W,N_eff=CalcWeights(test_align,options['theta'])
-	fi,fij=CalcStatsWeighted(options['q'],test_align,W/N_eff)
+	W,N_eff=CalcWeights(test_align,output['options0']['theta'])
+	fi,fij=CalcStatsWeighted(output['options1']['q'],test_align,W/N_eff)
 	C3 = CalcThreeCorrWeighted(test_align,fi,fij,p = W/N_eff,ind_L=ind_L)
 	test['Freq'] = fi
 	test['Pair_freq'] = CalcCorr2(fi,fij) #fij #
@@ -386,14 +428,15 @@ def Zero_Sum_Gauge(J,h):
 	J_zg = np.copy(J)
 	h_zg = np.copy(h)
 
+	h_zg -= np.expand_dims(np.mean(h,axis = 1),axis = 1) 
+	h_zg += np.sum(np.mean(J,axis=3)-np.expand_dims(np.mean(J,axis=(2,3)),axis=2),axis=1)
+
 	J_zg -= np.expand_dims(np.mean(J,axis = 2),axis = 2) 
 	J_zg -= np.expand_dims(np.mean(J,axis=3),axis =3) 
 	J_zg += np.expand_dims(np.mean(J,axis=(2,3)),axis=(2,3))
-
-	h_zg -= np.expand_dims(np.mean(h,axis = 1),axis = 1) 
-	h_zg += np.sum(np.mean(J,axis=3)+np.expand_dims(np.mean(J,axis=(2,3)),axis=2),axis=1)
 	return J_zg, h_zg
 
+import matplotlib.pyplot as plt
 def compute_energies(seqs,h,J):
 	"""
 	Function to compute energies for an alignment based on the provided parameters provided h and J values.
@@ -414,6 +457,7 @@ def compute_energies(seqs,h,J):
 		N=1
 		seqs=seqs.reshape((1,L))
 	energy=np.sum(np.array([h[i,seqs[:,i]] for i in range(L)]),axis=0)
+	
 	energy=energy+(np.sum(np.array([[J[i,j,seqs[:,i],seqs[:,j]] for j in range(L)] for i in range(L)]),axis=(0,1))/2)
 	return -energy
 				
@@ -430,6 +474,32 @@ def compute_energies(seqs,h,J):
 # 	Div = pdist(align, 'hamming')
 # 	return Div
 
+# def compute_similarities(Gen1,Gen2 = None):
+# 	"""
+# 	Function to compute for each sequence of Gen1 the distances to the nearest sequence of Gen2 (based on the Hamming distance).
+# 	If Gen2 is not provided, it computes distances within Gen1.
+
+# 	Args:
+# 	- Gen1 (numpy.array): A 2D numpy array representing the first set of sequences.
+# 	- Gen2 (numpy.array): An optional 2D numpy array representing the second set of sequences. 
+# 	If None, it calculates the distance within Gen1.
+
+# 	Returns:
+# 	- numpy.array: A 1D numpy array representing the computed distances between the sequences.
+# 	"""
+# 	if Gen2 is None:
+# 		Div = squareform(pdist(Gen1, 'hamming')) + np.eye(Gen1.shape[0])
+# 		Sim = np.amin(Div,axis = 0)
+# 	else:
+# 		N = Gen1.shape[0]
+# 		L = Gen1.shape[1]
+# 		Sim = np.zeros(N)
+# 		for i in range(N):
+# 			a = Gen1[i]
+# 			a = np.expand_dims(a,axis = 0)*np.ones(Gen2.shape)
+# 			s = 1 - np.sum((a == Gen2),axis = 1)/L
+# 			Sim[i] = np.amin(s)
+# 	return Sim
 
 def compute_similarities(Gen1, Gen2=None, N_aa=20):
     N1 = Gen1.shape[0]
@@ -489,33 +559,6 @@ def compute_diversity(alg, N_aa=20):
 # 		NORM = np.concatenate((NORM,np.sum((SUM!=0),axis=1)))
 # 	Dist = 1 - Dist/NORM
 # 	return Dist
-
-# def compute_similarities(Gen1,Gen2 = None):
-# 	"""
-# 	Function to compute for each sequence of Gen1 the distances to the nearest sequence of Gen2 (based on the Hamming distance).
-# 	If Gen2 is not provided, it computes distances within Gen1.
-
-# 	Args:
-# 	- Gen1 (numpy.array): A 2D numpy array representing the first set of sequences.
-# 	- Gen2 (numpy.array): An optional 2D numpy array representing the second set of sequences. 
-# 	If None, it calculates the distance within Gen1.
-
-# 	Returns:
-# 	- numpy.array: A 1D numpy array representing the computed distances between the sequences.
-# 	"""
-# 	if Gen2 is None:
-# 		Div = squareform(pdist(Gen1, 'hamming')) + np.eye(Gen1.shape[0])
-# 		Sim = np.amin(Div,axis = 0)
-# 	else:
-# 		N = Gen1.shape[0]
-# 		L = Gen1.shape[1]
-# 		Sim = np.zeros(N)
-# 		for i in range(N):
-# 			a = Gen1[i]
-# 			a = np.expand_dims(a,axis = 0)*np.ones(Gen2.shape)
-# 			s = 1 - np.sum((a == Gen2),axis = 1)/L
-# 			Sim[i] = np.amin(s)
-# 	return Sim
 
 def CalcCorr2(fi,fij):
 	"""
@@ -620,6 +663,13 @@ def compute_epsAAI(Gen_nat,Gen_mod,theta=0.2):
 	eps_AAI = (AS - 0.5)**2 + (AT - 0.5)**2
 	return eps_AAI,AS, AT
 
+def bimodality_coefficient(data):
+    n = len(data)
+    g = skew(data)
+    k = kurtosis(data)
+    BC = (g**2 + 1) / (k + 3 * ((n-1)**2 / ((n-2)*(n-3))))
+    return BC
+
 ##########################################################
 
 ####################### TRAINING/TEST SETS #######################
@@ -705,7 +755,7 @@ def RemoveCloseSeqs(align,theta):
 	Ind_del = np.arange(M)
 	Ind_unk = np.arange(M)
 	sim_del = np.ones(M) #compute_similarities(align[Ind],align[Ind])
-	while np.sum((sim_del>=0.2))>1:
+	while np.sum((sim_del>=theta))>1:
 		Ind_del_add = []
 		align_unk = align[Ind_unk]
 		Dist = squareform(pdist(align_unk, 'hamming')) + np.eye(align_unk.shape[0])
@@ -715,14 +765,14 @@ def RemoveCloseSeqs(align,theta):
 				Dist[i,:] = 1
 				Dist[:,i] = 1
 				Ind_del_add.append(Ind_unk[i])
-		Ind_del = np.concatenate((Ind_del[(sim_del<0.2)],Ind_del_add)).astype('int')
+		Ind_del = np.concatenate((Ind_del[(sim_del<theta)],Ind_del_add)).astype('int')
 		if len(Ind_del)==0:
 			return align
 		Ind = np.delete(np.arange(M),Ind_del)
 		sim_del = compute_similarities(align[Ind_del],align[Ind])
-		Ind_unk = Ind_del[(sim_del>=0.2)]
+		Ind_unk = Ind_del[(sim_del>=theta)]
 
-	Ind_del = Ind_del[(sim_del<0.2)]
+	Ind_del = Ind_del[(sim_del<theta)]
 	Ind = np.delete(np.arange(M),Ind_del)
 	Dist_align = align[np.sort(Ind)]
 	return Dist_align
@@ -816,6 +866,7 @@ def PCA_comparison(COG_samp,COG_model,Pears=0,Mask = 1):
 	ind_sort = np.argsort(W_cov)[::-1]
 	W_cov = W_cov[ind_sort]
 	V_cov = V_cov[:,ind_sort]
+	
 	w1,w2 = W_cov[0],W_cov[1]
 	v1,v2 = V_cov[:,0],V_cov[:,1]
 
@@ -824,9 +875,8 @@ def PCA_comparison(COG_samp,COG_model,Pears=0,Mask = 1):
 	ProjX_samp,ProjY_samp = COG_samp@ v1_norm,COG_samp@v2_norm
 	ProjX_model,ProjY_model = COG_model@v1_norm,COG_model@v2_norm
 
-	#Efficiency
 	conserved_var = (w1 + w2)/np.sum(W_cov)
-	print(conserved_var*100, '%')
+	print('Conserved Var. ',conserved_var*100, '%')
 
 	X_samp = np.concatenate((np.expand_dims(ProjX_samp,axis=1),np.expand_dims(ProjY_samp,axis=1)),axis = 1)
 	X_model = np.concatenate((np.expand_dims(ProjX_model,axis=1),np.expand_dims(ProjY_model,axis=1)),axis = 1)
@@ -868,20 +918,20 @@ def averaged_model(file_names,fam,Model,ITER=''):
 
 	Returns: None
 	"""
-	AVG_model = np.load('results/Article/'+Model+'/'+fam+'/'+file_names[0],allow_pickle=True)[()]
+	AVG_model = np.load('results/'+fam+'/'+file_names[0],allow_pickle=True)[()]
 	J_avg = np.zeros(AVG_model['J'+str(ITER)].shape)
 	h_avg = np.zeros(AVG_model['h'+str(ITER)].shape)
 	for f in file_names:
-		mod = np.load('results/Article/'+Model+'/'+fam+'/'+f,allow_pickle=True)[()]
+		mod = np.load('results/'+fam+'/'+f,allow_pickle=True)[()]
 		J_avg += mod['J'+str(ITER)]
 		h_avg += mod['h'+str(ITER)]
 	AVG_model['J'] = J_avg/len(file_names)
 	AVG_model['h'] = h_avg/len(file_names)
 	if Model=='SBM':
-		if ITER=='':nb_it = AVG_model['options']['maxIter']
+		if ITER=='':nb_it = AVG_model['options']['N_iter']
 		else: nb_it=ITER
 		#np.save('results/Article/'+Model+'/'+fam+'/'+fam+'_avgMod_m'+str(AVG_model['options']['m'])+'Ns'+str(AVG_model['options']['n_states'])+'Ni'+str(nb_it)+'.npy',AVG_model)
-		np.save('results/Article/'+Model+'/'+fam+'/'+'TM1_avgMod_m'+str(AVG_model['options']['m'])+'Ns'+str(AVG_model['options']['n_states'])+'Ni'+str(nb_it)+'.npy',AVG_model)
+		np.save('results/'+fam+'/'+'TMF_avgMod_m'+str(AVG_model['options']['m'])+'Ns'+str(AVG_model['options']['N_chains'])+'Ni'+str(nb_it)+'.npy',AVG_model)
 
 def rho(X):
 	"""
@@ -1262,21 +1312,21 @@ INDICES_CMAP = {'5 ': 0,
 				'94 ': 89,
 				'95 ': 90}
 
-def create_Struct_mat(struct_file='data/1ecm.pdb',dist=8):
-	struct_mat = np.zeros((91,91))
-	Contacts = cmap.contactMap(struct_file,dist=dist)
-	Contacts = Contacts['data']
-	for c in range(len(Contacts)):
-		if Contacts[c]['root']['chainID']=='A':
-			root = Contacts[c]['root']['resID']
-			partners = Contacts[c]['partners']
-			for p in range(len(partners)):
-				if partners[p]['chainID']=='A':
-					part = partners[p]['resID']
-					i1 = INDICES_CMAP[root]
-					i2 = INDICES_CMAP[part]
-					struct_mat[i1,i2],struct_mat[i2,i1]=1,1
-	np.save('data/StructMat_CM_5.npy',struct_mat)
+# def create_Struct_mat(struct_file='data/1ecm.pdb',dist=8):
+# 	struct_mat = np.zeros((91,91))
+# 	Contacts = cmap.contactMap(struct_file,dist=dist)
+# 	Contacts = Contacts['data']
+# 	for c in range(len(Contacts)):
+# 		if Contacts[c]['root']['chainID']=='A':
+# 			root = Contacts[c]['root']['resID']
+# 			partners = Contacts[c]['partners']
+# 			for p in range(len(partners)):
+# 				if partners[p]['chainID']=='A':
+# 					part = partners[p]['resID']
+# 					i1 = INDICES_CMAP[root]
+# 					i2 = INDICES_CMAP[part]
+# 					struct_mat[i1,i2],struct_mat[i2,i1]=1,1
+# 	np.save('data/StructMat_CM_5.npy',struct_mat)
 
 
 # Contacts = cmap.contactMap('data/1ecm.pdb',dist=8)
