@@ -12,8 +12,8 @@ First of all, I recommend creating a virtual environment. Here's an example usin
 
 ```
 pip3 install virtualenv
-virtualenv -p python3 env_name
-source env_name/bin/activate
+virtualenv -p python3 env_SBM
+source env_SBM/bin/activate
 ```
 
 ### Install requirements
