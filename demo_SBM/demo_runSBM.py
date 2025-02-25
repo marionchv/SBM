@@ -121,28 +121,15 @@ if __name__ == "__main__":
     parser.add_argument('--N_iter', type=int, default=400, help='Number of iterations')
     parser.add_argument('--m', type=int, default=20, help='Parameter m')
     parser.add_argument('--N_chains', type=int, nargs='+', help='List of N_chains values')
-    <<<<<<< HEAD
     parser.add_argument('--ParamInit', type=str, default='Zero', help='Init of fields and couplings')
-    parser.add_argument('--k_MCMC', type=int, default=100000, help='Number of MCMC steps')
-    parser.add_argument('--lambdJ', type=float, default=0, help='lambda J')
-    parser.add_argument('--lambdh', type=float, default=0, help='lambda h')
-    parser.add_argument('--theta', type=float, default=-1, help='threshold to compute the effective number of sequences')
-    parser.add_argument('--InfiniteMaskFields', type=str, default=None, help='Fields Mask filename')
-    =======
-    parser.add_argument('--ParamInit', type=str, default='Profile', help='Init of fields and couplings')
     parser.add_argument('--k_MCMC', type=int, default=10000, help='Number of MCMC steps')
     parser.add_argument('--lambdJ', type=float, default=0, help='lambda J')
     parser.add_argument('--lambdh', type=float, default=0, help='lambda h')
-    parser.add_argument('--theta', type=int, default=0.2, help='threshold to compute the effective number of sequences')
-    >>>>>>> 65d44bf3e27c7a0a8c7c2edab3c986c28230210d
+    parser.add_argument('--theta', type=int, default=-1, help='threshold to compute the effective number of sequences')
+    parser.add_argument('--InfiniteMaskFields', type=str, default=None, help='Mask to impose infinite fields where entries are 0')
     parser.add_argument('Input_MSA')
 
     args = parser.parse_args()
     run_SBM(args.Input_MSA,args.fam,args.mod,args.train_file,args.N_iter, 
-    <<<<<<< HEAD
-            args.m, args.N_chains,args.rep,args.N_av,args.k_MCMC,args.TestTrain,
-            args.ParamInit,args.lambdJ,args.lambdh,args.theta,args.PseudoCount,args.InfiniteMaskFields)
-    =======
             args.m, args.N_chains,args.rep,args.k_MCMC,args.TestTrain,
-            args.ParamInit,args.lambdJ,args.lambdh,args.theta)
-    >>>>>>> 65d44bf3e27c7a0a8c7c2edab3c986c28230210d
+            args.ParamInit,args.lambdJ,args.lambdh,args.theta,args.PseudoCount,args.InfiniteMaskFields)
