@@ -63,9 +63,8 @@ data/
 
 ## use jupyter notebook on a cluster
 
-
 ```
 pip3 install ipykernel
 ````
-create a notebook
-choose python environment env_name
+
+Then you can create a notebook and choose python environment env_SBM
