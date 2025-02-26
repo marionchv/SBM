@@ -131,5 +131,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     run_SBM(args.Input_MSA,args.fam,args.mod,args.train_file,args.N_iter, 
-            args.m, args.N_chains,args.rep,args.k_MCMC,args.TestTrain,
+            args.m, args.N_chains,args.rep,args.N_av,args.k_MCMC,args.TestTrain,
             args.ParamInit,args.lambdJ,args.lambdh,args.theta,args.PseudoCount,args.InfiniteMaskFields)
