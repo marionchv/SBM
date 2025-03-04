@@ -44,7 +44,7 @@ def ParseOptions(options):
         ('Pruning', False),
         ('Pruning_perc',None),
         ('Pruning Mask Couplings', None),
-        ('Infinite Mask Fields',None) # To forbid certain a.a at certain positions
+        ('Infinite Mask Fields',None), # To forbid certain a.a at certain positions
         
         ('Param_init', 'Profile'), # Zero, Profile, Custom
 
