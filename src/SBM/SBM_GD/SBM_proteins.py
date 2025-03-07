@@ -206,8 +206,7 @@ def Init_Param(options,J0,h0,N_eff,fi):
         Jinit = np.random.uniform(-ma,ma,(options['L'],options['L'],options['q'],options['q']))
         hinit = np.random.uniform(-ma,ma,(options['L'],options['q']))
     else:
-        print('This "Param_init" option is not available')
-        assert 0==1
+        raise ValueError("This Param_init option is not implemented.")
     ################################
 
     ################################
