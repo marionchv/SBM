@@ -5,4 +5,4 @@ Ask Emily Hinds
 """
 
 def prune_params():
-	return 0
+	raise ValueError("This option is not implemented in this public version of the code.")
